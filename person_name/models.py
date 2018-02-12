@@ -1,34 +1,44 @@
-from django.db import models
+from django.db.models import Model, CharField, URLField, ImageField
 from person_name.model_choices import *
 
 # Create your models here.
-class PersonNameStem(models.Model):
-    # type = models.CharField(
-    #     max_length=20,
-    #     choices=NAME_TYPES,
-    #     blank=True
-    # )
-    # hmmm, there's going to be a lot of redundant fields for some name types...
-    # perhaps as ther are only three types I should have a class for each of these
-    # polynym is what will be used in nearly all cases
-    role = models.CharField(
+class PersonNameStem(Model):
+    role = CharField(
         max_length=20,
-        choices=NAME_ROLES,
-        blank=True
+        choices=NAME_ROLES
     )
 
-   class Meta:
+    class Meta:
        abstract = True
 
 
 class Polynym(PersonNameStem):
-    given = models.CharField(max_length=50, blank=True, null=True)
-    middle = models.CharField(max_length=50, blank=True, null=True)
-    moniker = models.Charfield(max_length=50, blank=True, null=True)
-    surname = models.CharField(max_length=50, blank=True, null=True)
-    generation = models.CharField(
+    given = CharField(max_length=50, blank=True, null=True)
+    middle = CharField(max_length=50, blank=True, null=True)
+    moniker = CharField(max_length=50, blank=True, null=True)
+    surname = CharField(max_length=50)
+    generation = CharField(
         max_length=10,
         choices=GENERATION_CHOICES,
         blank=True
     )
-    secondary_surname = models.CharField(max_length=50, blank=True, null=True)
+    secondary_surname = CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return ('%s %s' % (self.given, self.surname))
+
+
+class Mononym(PersonNameStem):
+    mononym = CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.mononym
+
+
+class Pictonym(PersonNameStem):
+    url = URLField(blank=True, null=True)
+    image = ImageField(blank=True, null=True)
+    description = CharField(max_length=255)
+
+    def __str__(self):
+        return( 'Pictonym for person id %s' % (self.id))

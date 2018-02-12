@@ -1,13 +1,4 @@
 
-POLYNYM = 'POLYNYM'
-MONONYM = 'MONONYM'
-PICTONYM = 'PICTONYM'
-NAME_TYPES = (
-    (POLYNYM, 'Polynym'),
-    (MONONYM, 'Mononym'),
-    (PICTONYM, 'Pictonym'),
-)
-
 LEGAL = 'LEGAL'
 MARITAL = 'MARITAL'
 MAIDEN = 'MAIDEN'
@@ -21,4 +12,11 @@ NAME_ROLES = (
     (PREFERRED, 'Preferred'),
     (SOUBRIQUET, 'Soubriquet'),
     (PSEUDONYM, 'Pseudonym'),
+)
+
+JUNIOR = 'JUNIOR'
+SENIOR = 'SENIOR'
+GENERATION_CHOICES = (
+    (JUNIOR, 'Junior'),
+    (SENIOR, 'Senior'),
 )
