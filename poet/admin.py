@@ -1,11 +1,41 @@
 from django.contrib import admin
 
+from person.models import Person
+from person_name.models import Polynym, Mononym, Pictonym
 from poet.models import Poet
-from person_name.models import Polynym
+
+class PolynymInline(admin.StackedInline):
+    model = Polynym
+    extra = 0
+
+class MononymInline(admin.TabularInline):
+    model = Mononym
+    extra = 0
+
+class PictonymInline(admin.TabularInline):
+    model = Pictonym
+    extra = 0
+
+class PersonAdmin(admin.ModelAdmin):
+    inlines = [
+        PolynymInline,
+        MononymInline,
+        PictonymInline
+    ]
+
+class PoetAdmin(admin.ModelAdmin):
+    inlines = [
+        PolynymInline,
+        MononymInline,
+        PictonymInline
+    ]
 
 # Register your models here.
-admin.site.register(Poet)
+admin.site.register(Person, PersonAdmin)
 admin.site.register(Polynym)
+admin.site.register(Mononym)
+admin.site.register(Pictonym)
+admin.site.register(Poet, PoetAdmin)
 
 # so... can I add an overiding class in here that will sort out admin
 # for Poet? That is, whereas currently we just see three drop downs for the foreign
@@ -13,13 +43,17 @@ admin.site.register(Polynym)
 # enter a polynymic (or two) for the poet in the Poet admin screen?
 # Sounds a tall order, but...
 
-class PolynymInline(admin.TabularInline):
-    model = Polynym
-
-class PoetAdmin(admin.ModelAdmin):
-    inlines = [
-        PolynymInline,
-    ]
+# class PolynymInline(admin.TabularInline):
+#     model = Polynym
+#
+# class MononymInline(admin.TabularInline):
+#     model = Mononym
+#
+# class PoetAdmin(admin.ModelAdmin):
+#     inlines = [
+#         PolynymInline,
+#         MononymInline
+#     ]
 
 # this works perfectly, but does show up a problem in my models, I think
 # if you choose to add a polynym, you have the a choice of 'role': legal, preferred, pseudonym etc.
@@ -33,3 +67,6 @@ class PoetAdmin(admin.ModelAdmin):
 # But, when for e.g. we select to add a Polynym, we don't want soubriquet in the list
 # and when for e.g. we choose to add a mononym, we don't want er... or do we??
 # need to think on this...
+# ...actually I think it's fine
+# However, I have done the foreign key rels for poet and polynym etc the wrong way round
+# (and should I make a person model and have poet extend that??)

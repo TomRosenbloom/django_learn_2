@@ -1,10 +1,13 @@
 from django.db.models import Model, CharField
 
-from person.models import Person
+from person.model_choices import *
 
-
-class Poet(Person):
-    token = CharField(max_length=50, blank=True, null=True)
+class Person(Model):
+    gender = CharField(
+        max_length=10,
+        choices=GENDER_CHOICES,
+        blank=True
+    )
 
     def __str__(self):
         return self.polynym_set.first().surname # rather than first, maybe set one of the roles as default
