@@ -1,39 +1,58 @@
-from django.db.models import Model, CharField, DateField
-from datetime import date
+from django.db.models import Model, CharField, DateField, PositiveIntegerField
+from datetime import date, datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 #from partial_date import PartialDateField
 
 from person.model_choices import *
 
 class Person(Model):
-    PARTIAL_YEAR='%Y'
-    PARTIAL_MONTH='%Y-%m'
-    PARTIAL_DAY='%Y-%m-%d'
-    PARTIAL_DATE_CHOICES = (
-        (PARTIAL_YEAR, 'Year'),
-        (PARTIAL_MONTH, 'Month'),
-        (PARTIAL_DAY, 'Day'),
-    )
     gender = CharField(
         max_length=10,
         choices=GENDER_CHOICES,
         blank=True
     )
-    partial_date = CharField( # https://stackoverflow.com/questions/30134526/date-conveniences-validation-display-etc-for-partial-dates-in-django
-        choices = PARTIAL_DATE_CHOICES,
-        max_length=10,
+    birth_year = PositiveIntegerField(
+        validators=[
+            MinValueValidator(0000),
+            MaxValueValidator(datetime.now().year)
+            ],
         blank = True,
         null = True
     )
-    date_of_birth = DateField(blank = True, null = True)
-    # date_of_birth = PartialDateField(blank=True, null=True)
-    # date_of_death = PartialDateField(blank=True, null=True)
+    birth_month = PositiveIntegerField(
+        choices = MONTH_CHOICES,
+        blank = True,
+        null = True
+    )
+    birth_monthday = PositiveIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(31)
+            ],
+        blank = True,
+        null = True
+    )
+    date_of_birth = DateField(
+        help_text = "A date wil be created if the following are set: just a year; a year and a month; a year, a month and a day number",
+        blank = True,
+        null = True
+    )
 
     def save(self, *args, **kwargs):
-        if self.partial_date == self.PARTIAL_YEAR:
-            self.date_of_birth = date(self.date_of_birth.year, 1, 1)
-        elif self.partial_date == self.PARTIAL_MONTH:
-            self.date_of_birth = date(self.date_of_birth.year, self.date_of_birth.month, 1)
+        # if we have just a year, a year and a month, or all three date elements, then we can construct and save a date
+        if self.birth_year is not None and self.birth_month is not None and self.birth_monthday is not None:
+            # all three date elements are set
+            self.date_of_birth = date(self.birth_year, self.birth_month, self.birth_monthday)
+        elif self.birth_year is not None and self.birth_month is not None:
+            # the year and the month are set (but by implication of being here not the day)
+            self.date_of_birth = date(self.birth_year, self.birth_month, 1)
+        elif self.birth_year is not None and self.birth_month is None and self.birth_monthday is None:
+            # only the year is set
+            self.date_of_birth = date(self.birth_year, 1, 1)
+        else:
+            # any other combination
+            self.date_of_birth = None
         super(Person, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -45,9 +64,3 @@ class Person(Model):
         # Have to remember this is admin interface...
         # in public interface would need to enforce this
         #  - except in this instance I don't want to make an external admin user, that's kind of the point
-
-        # On the front you could present this in different ways, e.g. three drop downs
-        # for year/month/date (including 'none selected') then process them appropriately after form submission
-        # The important thing here is getting the data model right, i.e. avoiding use of any text fields
-        # to store dates e.g. if only the year is known
-        # For year, if there is a large range, a validated text input may be best

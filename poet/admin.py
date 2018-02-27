@@ -29,6 +29,7 @@ class PoetAdmin(admin.ModelAdmin):
         MononymInline,
         PictonymInline
     ]
+    readonly_fields = ('date_of_birth',)
 
 # Register your models here.
 admin.site.register(Person, PersonAdmin)
