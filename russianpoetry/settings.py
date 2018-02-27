@@ -40,8 +40,7 @@ INSTALLED_APPS = [
     'partial_date',
     'person',
     'person_name',
-    'poet',
-    'foo'
+    'poet'
 ]
 
 MIDDLEWARE = [
