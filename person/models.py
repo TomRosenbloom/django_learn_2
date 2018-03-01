@@ -55,16 +55,8 @@ class Person(Model):
             self.date_of_birth = None
         super(Person, self).save(*args, **kwargs)
 
-# raise validation error if no name set? - not here, because name doesn't yet exist...
-# ...that would have to go with Person_name, or Poet even...
-# set token = self.polynym_set.first().surname (plus forename) if no token entered?
 
     def __str__(self):
         return self.polynym_set.first().surname # rather than first, maybe set one of the roles as default
                                                 # probably legal or preferred?
-        #return self.id # temporary - the above causes an error if a name is not entered, obvs
-        #...which I discovered when testing the partial dates thing
-        # just for now have to *remember to* enter at least one name
-        # Have to remember this is admin interface...
-        # in public interface would need to enforce this
-        #  - except in this instance I don't want to make an external admin user, that's kind of the point
+        #return self.id # temporary - the above causes an error if no polynym exists, obvs
