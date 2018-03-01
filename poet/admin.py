@@ -1,12 +1,27 @@
 from django.contrib import admin
 
+from django.forms.models import BaseInlineFormSet
+from django import forms
+
 from person.models import Person
 from person_name.models import Polynym, Mononym, Pictonym
 from poet.models import Poet
 
+
+# class PolynymInlineFormSet(BaseInlineFormSet):
+#     def clean(self):
+#         #print(self.data)
+#         super(PolynymInlineFormSet, self).clean()
+#         name_count = 0
+#         for form in self.forms:
+#             if form.cleaned_data and not form.cleaned_data.get('DELETE'):
+#                 name_count += 1
+#         self.instance.__name_count__ = name_count
+
 class PolynymInline(admin.StackedInline):
     model = Polynym
     extra = 0
+    # formset = PolynymInlineFormSet
 
 class MononymInline(admin.TabularInline):
     model = Mononym
@@ -23,6 +38,13 @@ class PersonAdmin(admin.ModelAdmin):
         PictonymInline
     ]
 
+class PoetAdminForm(forms.ModelForm):
+    def clean(self):
+        # print('foo')
+        # print(self.instance.__name_count__)
+        print(self.data["polynym_set-TOTAL_FORMS"])
+        print(self.data["mononym_set-TOTAL_FORMS"])
+
 class PoetAdmin(admin.ModelAdmin):
     inlines = [
         PolynymInline,
@@ -31,6 +53,8 @@ class PoetAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ('date_of_birth',)
     fields = ('token', 'gender', 'birth_year', 'birth_month', 'birth_monthday', 'date_of_birth')
+    form = PoetAdminForm
+
 
 # Register your models here.
 admin.site.register(Person, PersonAdmin)
