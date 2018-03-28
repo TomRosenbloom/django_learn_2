@@ -10,8 +10,7 @@ NB the naming of persons is an interesting topic, if you need a structure with m
 https://stackoverflow.com/questions/20958/list-of-standard-lengths-for-database-fields/19845397#19845397
 and also this:
 https://softwareengineering.stackexchange.com/questions/233778/how-to-model-more-than-one-last-name
-
-and created my person_name model accordingly. There is a stem class which is extended by classes for Polynym, Mononym and Pictonym. These each have a foreign key rel to Person. The name stem has a 'role'  of 'preferred', 'legal',  'pseudonym' etc.
+...and created my person_name model accordingly. There is a stem class which is extended by classes for Polynym, Mononym and Pictonym. These each have a foreign key rel to Person. The name stem has a 'role'  of 'preferred', 'legal',  'pseudonym' etc.
 
 
 There's also some interesting business with partial dates, in this case for dates of birth which may not be known exactly. There is a django package for handling partial dates but in the end I went with my own crude solution. There are text fields for year, month, and month day, and a date field for date of birth. According to how these are entered, the date field may be generated from one or more of the text fields e.g. year '1850' with no month or day would yield 18500101. The point of this is simply to allow partial dates to be used in date ordering. 
