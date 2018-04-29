@@ -1,4 +1,4 @@
-# django_learn_2
+# django_poetry
 
 Learning Django, take two.
 
